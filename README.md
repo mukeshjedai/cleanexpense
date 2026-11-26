@@ -68,3 +68,5 @@ The timeline opens on the latest seven calendar days ending on the latest transa
 Timeline default updated: all loaded transaction days are shown in descending chronological order, newest on the left and oldest on the right. Source times descend within each date; unknown times stay in the separate untimed lane. Reset filters restores all history. The optional Latest 7 days shortcut and zoom controls remain available.
 
 Graph-level Zoom in, Zoom out and Reset zoom controls change horizontal dot spacing from 25% to 400% without filtering dates or changing totals. These are separate from the date-range zoom controls. Scroll horizontally through the enlarged graph.
+
+Overview Daily spending is a stacked bar chart with actual calendar date/year labels, category colours matching the expenses timeline, a legend, and date/category/amount details on hover, focus or tap. All-time view keeps dates in different months separate; a selected month includes its real calendar days.
