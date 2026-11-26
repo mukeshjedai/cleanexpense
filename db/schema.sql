@@ -1,4 +1,18 @@
 CREATE SCHEMA IF NOT EXISTS cleanexpense;
+CREATE TABLE IF NOT EXISTS cleanexpense.forecasts (
+  id uuid PRIMARY KEY,
+  requested_at timestamptz NOT NULL DEFAULT clock_timestamp(),
+  generated_at timestamptz,
+  horizon integer NOT NULL CHECK (horizon BETWEEN 7 AND 30),
+  category text NOT NULL,
+  currency varchar(3) NOT NULL,
+  source_snapshot text NOT NULL,
+  data_cutoff date NOT NULL,
+  status text NOT NULL CHECK (status IN ('pending','complete','failed')),
+  report jsonb,
+  CHECK (status <> 'complete' OR (report IS NOT NULL AND generated_at IS NOT NULL))
+);
+CREATE INDEX IF NOT EXISTS forecasts_lookup_idx ON cleanexpense.forecasts (horizon,category,generated_at DESC) WHERE status='complete';
 CREATE TABLE IF NOT EXISTS cleanexpense.category_rules (
   description_key text PRIMARY KEY CHECK (length(description_key) BETWEEN 1 AND 1000),
   category text NOT NULL CHECK (category IN ('Groceries','Dining','Shopping','Transport','Housing','Utilities','Health','Entertainment','Travel','Income','Transfers','Other')),
