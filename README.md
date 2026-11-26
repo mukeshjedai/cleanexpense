@@ -89,3 +89,9 @@ SELECT transaction_date, transaction_time, description, category,
 FROM cleanexpense.current_transactions
 ORDER BY transaction_date DESC, transaction_time DESC NULLS LAST, ordinal;
 ```
+
+## Automatic database workflow
+
+When a remembered session is valid, the workspace automatically loads the latest saved data on refresh and after sign-in. Manual category edits are sent to the server immediately; the server updates every saved transaction with that normalized description and stores a rule in `cleanexpense.category_rules` for future imports. A failure leaves the displayed category unchanged and shows an error.
+
+Statement previews are checked against the latest database version and show only unseen transactions, newest first. Confirming Import & save rechecks duplicates under the same database lock used for category updates, merges new rows into the latest version, applies saved category rules, and commits atomically. Duplicate matching uses date, available time, normalized full description and amount, counting occurrences so legitimate identical purchases are retained. The app does not discard an unseen backdated transaction merely because its date predates the last saved date. Reimporting a complete overlap makes no new snapshot. New imports reset the transaction list to newest-first order. A full workspace is still limited to 5,000 rows per saved version.

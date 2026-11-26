@@ -1,4 +1,9 @@
 CREATE SCHEMA IF NOT EXISTS cleanexpense;
+CREATE TABLE IF NOT EXISTS cleanexpense.category_rules (
+  description_key text PRIMARY KEY CHECK (length(description_key) BETWEEN 1 AND 1000),
+  category text NOT NULL CHECK (category IN ('Groceries','Dining','Shopping','Transport','Housing','Utilities','Health','Entertainment','Travel','Income','Transfers','Other')),
+  updated_at timestamptz NOT NULL DEFAULT clock_timestamp()
+);
 
 CREATE TABLE IF NOT EXISTS cleanexpense.snapshots (
   id uuid PRIMARY KEY,
