@@ -1,0 +1,8 @@
+import {test} from 'node:test';
+import assert from 'node:assert/strict';
+import {groupTransactions,sortTransactions} from './transaction-view';
+import type {Transaction} from './statement';
+const rows:Transaction[]=[{id:'1',date:'2026-11-01',description:'Cafe',amount:-9.5,category:'Dining'},{id:'2',date:'2026-11-02',description:'Salary',amount:1200,category:'Income'},{id:'3',date:'2026-11-03',description:'Cafe',amount:-100,category:'Dining'},{id:'4',date:'2026-11-04',description:'Notice',amount:0,category:'Other'}];
+test('incoming and outgoing sorting uses positive magnitudes rather than formatted strings',()=>{assert.equal(sortTransactions(rows,'outgoing','desc')[0].id,'3');assert.equal(sortTransactions(rows,'incoming','desc')[0].id,'2');assert.equal(rows[0].id,'1');assert.equal(sortTransactions(rows,'amount','asc')[0].amount,-100);});
+test('all text and date columns sort in both directions',()=>{for(const key of ['description','date','category'] as const){const asc=sortTransactions(rows,key,'asc'),desc=sortTransactions(rows,key,'desc');assert.ok(asc[0][key].localeCompare(asc.at(-1)![key])<=0);assert.ok(desc[0][key].localeCompare(desc.at(-1)![key])>=0);}});
+test('category and spending-direction groups sum all rows and preserve zeros',()=>{const dining=groupTransactions(rows,'category')[0];assert.equal(dining.name,'Dining');assert.equal(dining.outgoing,109.5);assert.equal(dining.incoming,0);assert.equal(dining.transactions.length,2);const direction=groupTransactions(rows,'direction');assert.equal(direction.find(g=>g.name==='Incoming')?.incoming,1200);assert.equal(direction.find(g=>g.name==='No movement')?.transactions.length,1);assert.equal(groupTransactions(rows,'merchant').find(g=>g.name==='cafe')?.outgoing,109.5);});
