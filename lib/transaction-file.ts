@@ -3,6 +3,7 @@ import { categories, parseDate } from './statement';
 
 export const savedTransaction = z.object({
  id:z.string().min(1).max(100),
+ time:z.string().regex(/^(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d)?$/).optional(),
  date:z.string().regex(/^\d{4}-\d{2}-\d{2}$/).refine(value=>{try{return parseDate(value)===value;}catch{return false;}},'Invalid date'),
  description:z.string().trim().min(1).max(1000),
  amount:z.number().finite().min(-1e12).max(1e12).refine(n=>Math.abs(n*100-Math.round(n*100))<0.001,'Amount must have at most two decimals'),
