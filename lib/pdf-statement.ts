@@ -60,5 +60,5 @@ export async function readPDFPages(data: Uint8Array, workerURL?: string): Promis
   const pages:PDFPage[]=[];
   for(let n=1;n<=doc.numPages;n++){const page=await doc.getPage(n);const content=await page.getTextContent();pages.push(content.items.flatMap(t=>'str' in t?[{str:t.str.trim(),x:t.transform[4],y:t.transform[5],width:t.width}]:[]));page.cleanup();}
   return pages;
- }finally{await doc.destroy();}
+ }finally{await task.destroy();}
 }

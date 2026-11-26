@@ -11,11 +11,12 @@
     "prebuild": "node scripts/copy-pdf-worker.mjs"
   },
   "dependencies": {
+    "@azure/storage-file-share": "^12.33.0",
     "lucide-react": "^0.468.0",
     "next": "^16.0.0",
     "openai": "^6.0.0",
     "papaparse": "^5.5.0",
-    "pdfjs-dist": "^5.7.284",
+    "pdfjs-dist": "^6.5.438",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "zod": "^4.0.0"
