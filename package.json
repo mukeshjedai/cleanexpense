@@ -8,7 +8,8 @@
     "start": "next start",
     "test": "tsx --test lib/*.test.ts",
     "predev": "node scripts/copy-pdf-worker.mjs",
-    "prebuild": "node scripts/copy-pdf-worker.mjs"
+    "prebuild": "node scripts/copy-pdf-worker.mjs",
+    "db:migrate": "node --env-file=.env.local --import tsx scripts/migrate-postgres.ts"
   },
   "dependencies": {
     "@azure/storage-file-share": "^12.33.0",
@@ -17,6 +18,7 @@
     "openai": "^6.0.0",
     "papaparse": "^5.5.0",
     "pdfjs-dist": "^6.5.438",
+    "pg": "^8.23.1",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "zod": "^4.0.0"
@@ -24,6 +26,7 @@
   "devDependencies": {
     "@types/node": "^22.0.0",
     "@types/papaparse": "^5.3.0",
+    "@types/pg": "^8.23.1",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "tsx": "^4.20.0",

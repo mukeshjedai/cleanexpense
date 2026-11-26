@@ -1,6 +1,6 @@
 # Statement Studio
 
-A responsive Next.js expense dashboard, ready for Vercel. Supports CSV uploads and PDF bank statements, including scans via OpenAI vision. Starts empty with no sample transactions. Save actual transactions as UTF-8 JSON text files in Azure Files, then load the latest saved file in a later session. Unsaved edits remain in browser memory and disappear on refresh. Sign in once per browser: a signed HttpOnly cookie remembers access for seven days, with Secure enabled on the hosted site and SameSite=Strict. The passphrase is not saved in localStorage or sessionStorage. Sign out or rotate APP_ACCESS_TOKEN to invalidate access.
+A responsive Next.js expense dashboard, ready for Vercel. Supports CSV uploads and PDF bank statements, including scans via OpenAI vision. Starts empty with no sample transactions. Save actual transactions to PostgreSQL when DATABASE_URL is configured, or to Azure Files when it is not. Load the latest saved version in a later session. Unsaved edits remain in browser memory and disappear on refresh. Sign in once per browser: a signed HttpOnly cookie remembers access for seven days, with Secure enabled on the hosted site and SameSite=Strict. The passphrase is not saved in localStorage or sessionStorage. Sign out or rotate APP_ACCESS_TOKEN to invalidate access.
 
 ## Run locally
 
@@ -72,3 +72,20 @@ Graph-level Zoom in, Zoom out and Reset zoom controls change horizontal dot spac
 Overview Daily spending is a stacked bar chart with actual calendar date/year labels, category colours matching the expenses timeline, a legend, and date/category/amount details on hover, focus or tap. All-time view keeps dates in different months separate; a selected month includes its real calendar days.
 
 Overview chart drilldowns: daily bars show newest dates first. Click a coloured segment to filter transactions by exact date and category; click the daily total to see all expenses on that date. Click a pie slice or legend category to see its expense transactions within the selected month. Each action scrolls to the transaction list, clears search, and displays a removable drilldown filter. Show all transactions clears the chart filter.
+
+## PostgreSQL storage
+
+The `cleanexpense` schema is isolated from other applications in `defaultdb`. `cleanexpense.snapshots` stores save versions and currencies. `cleanexpense.transactions` stores each version's transaction rows, including dates, optional source times, descriptions, exact numeric amounts, categories, and generated incoming/outgoing amounts. `cleanexpense.current_transactions` is a view of the newest complete version. Existing saves remain as history.
+
+Set server-only `DATABASE_URL` and `DATABASE_CA_CERT_BASE64` in local `.env.local` and Vercel Production settings. The CA variable contains the base64-encoded PEM certificate from the Aiven service. TLS always validates the certificate and hostname; sslmode query options are removed before explicit TLS setup. The local pool has at most two connections per server instance.
+
+Run `npm run db:migrate` locally to apply `db/schema.sql` and import the newest saved Azure dataset. The source Azure filename makes repeat imports idempotent. The script verifies all rows and amounts after migration. Azure credentials are required for this import; the runtime database does not need them. Schema creation is an explicit migration, not performed on ordinary requests. When DATABASE_URL is set, database failures are returned as errors; the app never silently falls back to stale Azure data. Existing authentication remains required.
+
+Query the current data with:
+
+```sql
+SELECT transaction_date, transaction_time, description, category,
+       amount, incoming_amount, outgoing_amount, currency
+FROM cleanexpense.current_transactions
+ORDER BY transaction_date DESC, transaction_time DESC NULLS LAST, ordinal;
+```
