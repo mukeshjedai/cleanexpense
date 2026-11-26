@@ -1,6 +1,6 @@
 # Statement Studio
 
-A responsive Next.js expense dashboard, ready for Vercel. Supports CSV uploads and PDF bank statements, including scans via OpenAI vision. Starts empty with no sample transactions. Save actual transactions as UTF-8 JSON text files in Azure Files, then load the latest saved file in a later session. Unsaved edits and the app passphrase remain in browser memory and disappear on refresh.
+A responsive Next.js expense dashboard, ready for Vercel. Supports CSV uploads and PDF bank statements, including scans via OpenAI vision. Starts empty with no sample transactions. Save actual transactions as UTF-8 JSON text files in Azure Files, then load the latest saved file in a later session. Unsaved edits remain in browser memory and disappear on refresh. Sign in once per browser: a signed HttpOnly cookie remembers access for seven days, with Secure enabled on the hosted site and SameSite=Strict. The passphrase is not saved in localStorage or sessionStorage. Sign out or rotate APP_ACCESS_TOKEN to invalidate access.
 
 ## Run locally
 
@@ -52,3 +52,7 @@ npm run build
 AI uses the OpenAI Responses API with structured outputs and validates the returned data. Categorization rejects changes to dates, descriptions or amounts. PDF data is held for review before updating the dashboard. AI endpoint rejects missing/wrong access tokens, oversized payloads and invalid inputs. Actual PDF extraction requires configured OpenAI credentials and is not covered by offline tests.
 
 OpenAI references: https://developers.openai.com/api/docs/guides/file-inputs and https://developers.openai.com/api/docs/guides/structured-outputs.
+
+## Expenses timeline
+
+Open **Expenses timeline** from Overview, or visit `/expenses`. View daily, weekly (Monday start), and monthly expenses, with date and category filters. Charts label nonzero amounts and identify each category, with horizontal scrolling to keep labels readable. Zero-spend periods are filled between the first and last included expense. Incoming values and transfers are excluded. Workspace data survives client-side navigation between Overview and the timeline; after a full refresh, select Load saved data to restore the latest Azure snapshot using your remembered sign-in.

@@ -2,7 +2,7 @@ import OpenAI from 'openai';
 import { zodTextFormat } from 'openai/helpers/zod';
 import { z } from 'zod';
 import { categories, parseDate } from '@/lib/statement';
-import { timingSafeEqual } from 'node:crypto';
+import { authenticated } from '@/lib/session';
 export const runtime='nodejs';
 export const maxDuration=60;
 const Row=z.object({date:z.string(),description:z.string(),amount:z.number(),category:z.enum(categories)});
@@ -12,8 +12,7 @@ export async function POST(request: Request){
  const error=(message:string,status=400)=>Response.json({error:message},{status,headers});
  const secret=process.env.APP_ACCESS_TOKEN;
  if(!secret||!process.env.OPENAI_API_KEY)return error('AI is not configured. Set OPENAI_API_KEY and APP_ACCESS_TOKEN in Vercel environment variables.',503);
- const token=request.headers.get('authorization')?.replace(/^Bearer /,'')||'';
- if(Buffer.byteLength(token)!==Buffer.byteLength(secret)||!timingSafeEqual(Buffer.from(token),Buffer.from(secret)))return error('Incorrect AI access passphrase.',401);
+ if(!authenticated(request))return error('Please sign in to use AI.',401);
  if(Number(request.headers.get('content-length')||0)>4_000_000)return error('Upload is too large. PDF limit is 2.5 MB.',413);
  try{
  const raw=await request.text();if(raw.length>4_000_000)return error('Upload is too large.',413);

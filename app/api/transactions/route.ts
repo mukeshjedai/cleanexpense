@@ -1,4 +1,4 @@
-import { timingSafeEqual } from 'node:crypto';
+import { authenticated } from '@/lib/session';
 import { ZodError } from 'zod';
 import { loadTransactions, saveTransactions } from '@/lib/azure-files';
 export const runtime='nodejs';
@@ -7,8 +7,7 @@ const headers={'Cache-Control':'no-store'};
 function authorize(request:Request){
  const secret=process.env.APP_ACCESS_TOKEN;
  if(!secret||!process.env.AZURE_STORAGE_CONNECTION_STRING)return Response.json({error:'Azure storage is not configured on the server.'},{status:503,headers});
- const supplied=request.headers.get('authorization')?.replace(/^Bearer /,'')||'';
- if(Buffer.byteLength(secret)!==Buffer.byteLength(supplied)||!timingSafeEqual(Buffer.from(secret),Buffer.from(supplied)))return Response.json({error:'Enter the correct app access passphrase to use Azure storage.'},{status:401,headers});
+ if(!authenticated(request))return Response.json({error:'Please sign in to use Azure storage.'},{status:401,headers});
 }
 export async function GET(request:Request){
  const denied=authorize(request);if(denied)return denied;
