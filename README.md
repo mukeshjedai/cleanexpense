@@ -56,3 +56,5 @@ OpenAI references: https://developers.openai.com/api/docs/guides/file-inputs and
 ## Expenses timeline
 
 Open **Expenses timeline** from Overview, or visit `/expenses`. View daily, weekly (Monday start), and monthly expenses, with date and category filters. Charts label nonzero amounts and identify each category, with horizontal scrolling to keep labels readable. Zero-spend periods are filled between the first and last included expense. Incoming values and transfers are excluded. Workspace data survives client-side navigation between Overview and the timeline; after a full refresh, select Load saved data to restore the latest Azure snapshot using your remembered sign-in.
+
+Manual category corrections update every loaded transaction with the same full description (ignoring letter case and extra whitespace), across all dates and active filters. Similar but different descriptions are kept separate. Select Save to Azure to persist corrections; future imports are not automatically changed by this action.
