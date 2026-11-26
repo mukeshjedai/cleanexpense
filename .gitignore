@@ -5,3 +5,9 @@ node_modules/
 .vercel/
 *.tsbuildinfo
 public/pdf.worker.min.mjs
+android/.gradle/
+android/**/build/
+android/local.properties
+android/signing.properties
+android/.android-signing/
+dist/*.apk
